@@ -1,57 +1,109 @@
 import React, {Component} from "react";
 import axios from "axios";
-import NextQuote from '../NextQuote/NextQuote';
+import FavoritesList from "../Favorites/FavoritesList";
+import FavoriteButton from "../FavoriteButton/FavoriteButton";
+import MoreJokes from "../MoreJokes/MoreJokes"
+import "./MainFeature.css";
 
-class MainFeature extends Component {
+
+    class MainFeature extends Component {
     constructor(props){
         super(props);
-        this.state={
-            quote:'',
-            favorites: [],
-        }
-        this.addFavorite=this.addFavorite.bind(this);
+
+
+        this.state = {
+            joke: "",
+            favJokes: [],  
+        };
+
+        this.addFavorite = this.addFavorite.bind(this);
+        this.deleteFavorite = this.deleteFavorite.bind(this);
+        this.editFavorite = this.editFavorite.bind(this)
     }
 
     componentDidMount(){
-        this.randomQuote();
-        
+        this.randomJoke();
+        this.getFavorites();
     }
 
-    randomQuote(){
-        axios.get("/api/quotes/random")
+    randomJoke(){
+        
+        axios.get("/api/jokes/random")
         .then(response => { 
-            console.log("get random response:", response.data);
-            this.setState({ quote: response.data.value});
+            console.log("get random response:", response.data.value);
+            this.setState({ joke: response.data.value});
         })
-        .catch(() => this.randomQuote());
+        .catch(() => this.randomJoke());
     }
 
     addFavorite(){
-        let {quote, favorites} =this.state;
-        axios.post("/api/quotes", { quote: this.state.quote})
+        let { joke, favJokes } = this.state;
+        axios.post("/api/jokes", { joke:this.state.joke })
         .then(response => {
-            // console.log("add to favorite", response)
-            this.setState({ favorites: response.data})
+            this.setState({ favJokes: response.data})
         });
-        this.randomQuote();
+        this.randomJoke();
     }
 
-    render(){
-        const {quote, favorites} = this.state;
-        console.log(favorites);
+    editFavorite(joke, id) {
+        axios.put(`/api/jokes/${id}`, {joke})
+        .then(response => {
+            console.log(response.data);
+           this.setState({ favJokes: response.data})
+        })
+    }
 
+    getFavorites(){
+        axios.get("/api/jokes").then(response => this.setState({ favJokes: response.data}));
+    }
+
+    deleteFavorite(id){
+        axios.delete(`/api/jokes/${id}`)
+        .then(response => this.setState({ favJokes: response.data }));
+    }
+
+    render() {
+        const { joke, favJokes } = this.state;
+        // console.log(favJokes);
+        
         return(
-            <div>
-                <header>Best App Known to Man</header>
-                <div className = "main">
-                    <div>{quote}</div>
-                        <p> testing this from MainFeature.js</p>
-                        <h1>test on more</h1>
-                    <NextQuote randomQuote={()=>this.randomQuote()} />
+        
+        <div className="MainFeature">
+            <div className="background"></div>
+            
+            <header className="head">
+                <h1 className="title"> HERE COMES CHUCK</h1>
+
+            </header>
+            
+            <div className = "main">
+                <div className = "joketext">{joke}</div>
+                <div className="buttons">
+                    <MoreJokes randomJoke={()=>this.randomJoke()} />
+                    <div>
+                    <FavoriteButton add={this.addFavorite}/>
+                    </div>
                 </div>
+            </div> 
+                
+            <div className="favorites-list">
+                <FavoritesList 
+                favJokes={favJokes}
+                edit={this.editFavorite}
+                delete={this.deleteFavorite}
+                />
             </div>
+
+        </div>
         )
     }
+
 }
 
 export default MainFeature;
+
+
+
+
+
+

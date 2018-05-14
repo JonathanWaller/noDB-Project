@@ -1,0 +1,27 @@
+
+.MainFeature{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-self: auto;
+
+
+}
+
+
+
+header{
+    display: flex;
+    /* display */
+    justify-content: space-around;
+    background: white;
+    /* width: 100vw; */
+    /* height: 20vh; */
+    border: 4px solid black;
+    /* padding-top: 10vh; */
+
+}
+
+.title {
+    
+}
